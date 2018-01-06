@@ -7,7 +7,7 @@ package ua.alex.a24122017geoquiz;
 public class TrueFalse {
     private int mQuestion;
 
-    private boolean mTrueQuestion;
+    private boolean mIsTrueQuestion;
 
     public int getQuestion() {
         return mQuestion;
@@ -17,17 +17,17 @@ public class TrueFalse {
         mQuestion = question;
     }
 
-    public boolean isTrueQuestion() {
-        return mTrueQuestion;
+    public boolean isAnswerTrue() {
+        return mIsTrueQuestion;
     }
 
     public void setTrueQuestion(boolean trueQuestion) {
-        mTrueQuestion = trueQuestion;
+        mIsTrueQuestion = trueQuestion;
     }
 
     public TrueFalse(int question, boolean trueQuestion) {
         mQuestion = question;
-        mTrueQuestion = trueQuestion;
+        mIsTrueQuestion = trueQuestion;
     }
 
 }
