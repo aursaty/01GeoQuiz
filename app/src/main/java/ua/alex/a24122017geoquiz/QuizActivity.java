@@ -11,9 +11,8 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
-    public static final String TAG = "QuizActivity";
-
     public static final String KEY_INDEX = "index";
+    public static final String KEY_IS_ANSWERED = "isAnswered";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -30,27 +29,25 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
+    private int[] mIsQuestionAnswered = {0, 0, 0, 0, 0};
 
     private void updateQuestion() {
-        Log.d(TAG, "Current question index: "  + mCurrentIndex);
-
-        int question;
-        try {
-            question = mQuestionBank[mCurrentIndex].getQuestion();
-            mQuestionTextView.setText(question);
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            Log.e(TAG, "Index out of bounds", ex);
-        }
+        int question = mQuestionBank[mCurrentIndex].getQuestion();
+        mQuestionTextView.setText(question);
     }
 
     private void checkAnswer(boolean userPressedTrue) {
+        if (mIsQuestionAnswered[mCurrentIndex] != 0) return;
+
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
 
         int messageResId = 0;
 
         if (userPressedTrue == answerIsTrue) {
+            mIsQuestionAnswered[mCurrentIndex] = 1;
             messageResId = R.string.correct_toast;
         } else {
+            mIsQuestionAnswered[mCurrentIndex] = -1;
             messageResId = R.string.incorrect_toast;
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
@@ -59,12 +56,12 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mIsQuestionAnswered= savedInstanceState.getIntArray(KEY_IS_ANSWERED);
         }
         updateQuestion();
 
@@ -97,8 +94,18 @@ public class QuizActivity extends AppCompatActivity {
         mNextImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                updateQuestion();
+                if (mCurrentIndex < mQuestionBank.length - 1) {
+                    mCurrentIndex = (mCurrentIndex + 1);
+                    updateQuestion();
+                }
+                else {
+                    int rightAnswerCounter = 0;
+                    for (int i: mIsQuestionAnswered) {
+                        if (i == 1)
+                            rightAnswerCounter++;
+                    };
+                    Toast.makeText(getBaseContext(), getResources().getString(R.string.result_toast) + (int) (((double) rightAnswerCounter / mQuestionBank.length) * 100), Toast.LENGTH_SHORT).show();
+                }
             }
         });
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
@@ -113,38 +120,33 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        Log.i(TAG, "onSaveInstance");
+        savedInstanceState.putIntArray(KEY_INDEX, mIsQuestionAnswered);
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart() called");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause() called");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume() called");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop() called");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy() called");
     }
 
 }
