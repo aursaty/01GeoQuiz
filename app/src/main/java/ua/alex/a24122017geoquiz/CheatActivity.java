@@ -18,7 +18,7 @@ public class CheatActivity extends AppCompatActivity {
             "ua.alex.a24122017geoquiz.answer_shown";
 
     private boolean mAnswerIsTrue;
-
+//
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
 
