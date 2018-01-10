@@ -3,6 +3,7 @@ package ua.alex.a24122017geoquiz;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -13,6 +14,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String KEY_INDEX = "index";
     private static final String KEY_IS_ANSWERED = "isAnswered";
+    private static final String KEY_IS_CHEATER = "isCheated";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
@@ -31,8 +33,8 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
-    private int[] mIsQuestionAnswered = {0, 0, 0, 0, 0};
-    private boolean mIsCheater;
+    private int[] mIsQuestionAnswered = new int[]{0, 0, 0, 0, 0};
+    private boolean mIsCheater = false;
 
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getQuestion();
@@ -40,6 +42,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(boolean userPressedTrue) {
+        Log.e("INDEX", mIsQuestionAnswered.toString());//[mCurrentIndex] + "");
         if (mIsQuestionAnswered[mCurrentIndex] != 0) return;
 
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
@@ -69,6 +72,7 @@ public class QuizActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             mIsQuestionAnswered = savedInstanceState.getIntArray(KEY_IS_ANSWERED);
+            mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER);
         }
         updateQuestion();
 
@@ -152,8 +156,9 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putIntArray(KEY_INDEX, mIsQuestionAnswered);
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putIntArray(KEY_IS_ANSWERED, mIsQuestionAnswered);
+        savedInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
     }
 
     @Override

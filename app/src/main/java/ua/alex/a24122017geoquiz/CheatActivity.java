@@ -12,13 +12,16 @@ import org.w3c.dom.Text;
 
 public class CheatActivity extends AppCompatActivity {
 
+    public static final String KEY_IS_CHEATED = "isCheted";
+
     private static final String EXTRA_ANSWER_IS_TRUE =
             "ua.alex.a24122017geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN =
             "ua.alex.a24122017geoquiz.answer_shown";
 
     private boolean mAnswerIsTrue;
-//
+    private boolean mIsCheater = false;
+
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
 
@@ -37,6 +40,13 @@ public class CheatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
+        if (savedInstanceState != null) {
+            mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATED);
+            if (mIsCheater) {
+                setAnswerShownResult(mIsCheater);
+            }
+        }
+
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
@@ -49,9 +59,16 @@ public class CheatActivity extends AppCompatActivity {
                 } else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
-                setAnswerShownResult(true);
+                mIsCheater = true;
+                setAnswerShownResult(mIsCheater);
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(KEY_IS_CHEATED, mIsCheater);
     }
 
     private void setAnswerShownResult(boolean isAnswerShown) {
